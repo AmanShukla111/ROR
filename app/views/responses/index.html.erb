@@ -1,0 +1,20 @@
+<h1>All Responses</h1>
+
+<% @responses.each do |response| %>
+  <div class="response">
+    <h2><%= response.form.name %></h2>
+    <p><%= response.form.description %></p>
+
+    <h3>Answers:</h3>
+    <ul>
+      <% response.answers.each do |answer| %>
+        <li>
+          <strong><%= answer.form_field.field_text %>:</strong>
+          <%= answer.response_text %>
+        </li>
+      <% end %>
+    </ul>
+
+    <hr>
+  </div>
+<% end %>

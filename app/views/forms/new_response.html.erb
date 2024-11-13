@@ -1,0 +1,30 @@
+<h1>Respond to <%= @form.name %></h1>
+<p><%= @form.description %></p>
+
+<%= form_with model: @response, url: responses_path, local: true do |f| %>
+  <%= f.hidden_field :form_id, value: @form.id %>
+
+  <% @response.answers.each_with_index do |answer, index| %>
+    <div class="form-group">
+      <label><%= answer.form_field.field_text %></label>
+      
+      <% if answer.form_field.options.present? %>
+        <% answer.form_field.options.each do |option| %>
+          <div>
+            <%= f.fields_for :answers, answer do |a| %>
+              <%= a.radio_button :response_text, option %>
+              <%= a.label :response_text, option %>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <%= f.fields_for :answers, answer do |a| %>
+          <%= a.text_field :response_text, placeholder: "Your answer" %>
+          <%= a.hidden_field :form_field_id, value: answer.form_field.id %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= f.submit "Submit Response", class: "btn btn-primary" %>
+<% end %>

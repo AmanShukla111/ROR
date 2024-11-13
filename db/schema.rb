@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_13_102332) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_13_104855) do
   create_table "answers", force: :cascade do |t|
     t.integer "response_id", null: false
     t.integer "form_field_id", null: false
@@ -27,6 +27,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_13_102332) do
     t.integer "field_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "options"
     t.index ["form_id"], name: "index_form_fields_on_form_id"
   end
 

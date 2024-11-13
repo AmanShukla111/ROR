@@ -1,0 +1,12 @@
+<h1>Available Forms</h1>
+
+
+
+<ul>
+  <% @forms.each do |form| %>
+    <li>
+      <h2><%= link_to form.name, form_path(form) %></h2>
+      <p><%= form.description %></p>
+    </li>
+  <% end %>
+</ul>
