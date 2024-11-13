@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
   # Define routes for forms
-  resources :forms, only: [:index, :show] do
+  resources :forms, only: [ :index, :show ] do
     member do
-      get 'new_response'
-      get 'responses'
+      get "new_response"
+      get "responses"
     end
   end
 
   # Define routes for responses
-  resources :responses, only: [:create]
+  resources :responses, only: [ :create ]
 
   # Define the root path
   root "forms#index"
