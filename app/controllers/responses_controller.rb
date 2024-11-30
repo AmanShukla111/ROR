@@ -1,26 +1,61 @@
 class ResponsesController < ApplicationController
-    def create
-      @response = Response.new(response_params)
+  before_action :set_form, only: [:new, :create, :index, :show, :edit, :update, :destroy]
+  before_action :set_response, only: [:show, :edit, :update, :destroy]
 
-      if @response.save
-        redirect_to form_path(@response.form), notice: "Response created successfully."
-      else
-        flash[:alert] = "Error saving response."
-        redirect_back fallback_location: new_response_form_path(@response.form)
-      end
+  def index
+    @responses = @form.responses
+  end
+
+  def show
+    # Set @form based on @response's associated form
+    @form = @response.form
+  end
+
+  def edit
+    @form = Form.find(params[:form_id])
+    @response = @form.responses.find(params[:id])
+  end
+
+  def update
+    if @response.update(response_params)
+      redirect_to form_response_path(@form, @response), notice: 'Response was successfully updated.'
+    else
+      render :edit, status: :unprocessable_entity
     end
+  end
 
-    def index
-      if params[:form_id]
-        @responses = Response.where(form_id: params[:form_id])
-      else
-        @responses = Response.all
-      end
+  def destroy
+    @response.destroy
+    redirect_to form_responses_path(@form), notice: 'Response was successfully deleted.'
+  end
+
+  def new
+    @response = @form.responses.build
+    @form.form_fields.each do |field|
+      @response.answers.build(form_field: field)
     end
+  end
 
-    private
-
-    def response_params
-      params.require(:response).permit(:form_id, answers_attributes: [ :form_field_id, :response_text ])
+  def create
+    @response = @form.responses.build(response_params)
+    if @response.save
+      redirect_to form_path(@form), notice: 'Response was successfully submitted.'
+    else
+      render :new, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def set_form
+    @form = Form.find(params[:form_id])
+  end
+
+  def set_response
+    @response = Response.find(params[:id])
+  end
+
+  def response_params
+    params.require(:response).permit(answers_attributes: [:id, :response_text, :form_field_id])
+  end
 end

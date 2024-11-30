@@ -25,10 +25,11 @@ class FormsController < ApplicationController
       end
     end
 
-    # Edit an existing form
     def edit
+      @form = Form.find(params[:id])
+      @form_fields = @form.form_fields
     end
-
+    
     # Update a form in the database
     def update
       if @form.update(form_params)
@@ -44,19 +45,15 @@ class FormsController < ApplicationController
     end
 
 
-    def new_response
-      @response = @form.responses.build
-      @form.form_fields.each { |field| @response.answers.build(form_field: field) }
-      puts Rails.root.join("app/views/forms/new_response.html.erb")
-    end
 
 
-    # Delete a form from the database
+
     def destroy
       @form.destroy
       redirect_to forms_path, notice: "Form was successfully deleted."
     end
 
+    
     private
 
     # Set form for actions that need it

@@ -1,0 +1,29 @@
+<% content_for :title, "Edit Form" %>
+
+<h1>Edit Form Details</h1>
+
+<%= form_with(model: @form, local: true, url: form_path(@form), method: :patch) do |f| %>
+  <div class="mb-3">
+    <%= f.label :name, "Form Name" %>
+    <%= f.text_field :name, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, "Description" %>
+    <%= f.text_area :description, class: "form-control", rows: 3, required: true %>
+  </div>
+
+  <%= f.submit "Update Form", class: "btn btn-primary" %>
+<% end %>
+
+<hr>
+
+<h2>Manage Form Fields</h2>
+
+<div>
+  <%= link_to "Edit Form Fields", edit_form_form_field_path(@form), class: "btn btn-secondary" %>
+  <%= link_to "Add New Form Field", new_form_form_field_path(@form), class: "btn btn-success" %>
+</div>
+
+<br>
+<%= link_to "Back to Forms", forms_path, class: "btn btn-secondary" %>

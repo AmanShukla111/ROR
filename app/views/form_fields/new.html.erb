@@ -1,0 +1,25 @@
+<% content_for :title, "Add New Form Field" %>
+
+<h1>Add New Form Field</h1>
+
+<%= form_with model: @form_field, local: true, url: form_form_fields_path(@form), method: :post do |f| %>
+  <div class="mb-3">
+    <%= f.label :field_text, "Question" %>
+    <%= f.text_field :field_text, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :field_type, "Response Type" %>
+    <%= f.select :field_type, options_for_select([["Text", "text"], ["Radio Buttons", "radio"], ["Checkboxes", "checkbox"], ["Dropdown", "select"]]), class: "form-control" %>
+  </div>
+
+  <div class="mb-3 options-container">
+    <%= f.label :options, "Options (comma-separated)" %>
+    <%= f.text_area :options, class: "form-control" %>
+  </div>
+
+  <%= f.submit "Add Field", class: "btn btn-success" %>
+<% end %>
+
+<br>
+<%= link_to "Back to Form", edit_form_path(@form), class: "btn btn-secondary" %>

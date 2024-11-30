@@ -1,0 +1,20 @@
+<h1>Responses for <%= @form.name %></h1>
+
+<% if @responses.any? %>
+  <ul>
+    <% @responses.each do |response| %>
+      <li>
+        <p>Response ID: <%= response.id %></p>
+        <ul>
+          <% response.answers.each do |answer| %>
+            <li><strong><%= answer.form_field.field_text %>:</strong> <%= answer.response_text %></li>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No responses yet for this form.</p>
+<% end %>
+
+<%= link_to "Back to Form", form_path(@form), class: "btn btn-secondary mt-3" %>

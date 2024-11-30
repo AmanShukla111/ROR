@@ -1,0 +1,27 @@
+<%= form_with(model: @form, local: true) do |form| %>
+  <% if @form.errors.any? %>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading">There were some problems with your submission:</h4>
+      <ul>
+        <% @form.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :name, "Form Name" %>
+    <%= form.text_field :name, class: "form-control", required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description, class: "form-control", rows: 3, required: true %>
+  </div>
+
+  <div class="form-group">
+    <br>
+    <%= form.submit form.object.new_record? ? "Create Form" : "Update Form", class: "btn btn-primary" %>
+  </div>
+<% end %>

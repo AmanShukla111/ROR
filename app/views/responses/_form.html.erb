@@ -1,0 +1,40 @@
+<%= form_with model: [@form, @response], local: true do |f| %>
+  <h2>Answers</h2>
+  <% @response.answers.each do |answer| %>
+    <% next unless answer.form_field.present? %> <!-- Safeguard to skip nil form fields -->
+    <div class="mb-3 form-group">
+      <strong><%= answer.form_field.field_text %></strong>
+      <% if answer.form_field.options.present? %>
+        <% options = answer.form_field.options.split(',') %>
+        <% if answer.form_field.field_type == 'radio' %>
+          <% options.each do |option| %>
+            <%= f.fields_for :answers, answer do |af| %>
+              <%= af.hidden_field :id %>
+              <%= af.radio_button :response_text, option %>
+              <%= af.label :response_text, option %>
+            <% end %>
+          <% end %>
+        <% elsif answer.form_field.field_type == 'checkbox' %>
+          <% options.each do |option| %>
+            <%= f.fields_for :answers, answer do |af| %>
+              <%= af.hidden_field :id %>
+              <%= af.check_box :response_text, multiple: true, value: option %>
+              <%= af.label :response_text, option %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= f.fields_for :answers, answer do |af| %>
+            <%= af.hidden_field :id %>
+            <%= af.text_field :response_text, class: 'form-control' %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= f.fields_for :answers, answer do |af| %>
+          <%= af.hidden_field :id %>
+          <%= af.text_field :response_text, class: 'form-control' %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+  <%= f.submit @response.persisted? ? 'Update Response' : 'Submit Response', class: 'btn btn-primary' %>
+<% end %>

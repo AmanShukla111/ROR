@@ -1,0 +1,30 @@
+<% content_for :title, "Edit Form Fields" %>
+
+<h1>Edit Form Fields</h1>
+
+<% @form.form_fields.each do |field| %>
+  <div class="form-group">
+    <%= form_with(model: field, local: true, url: form_form_field_path(@form, field), method: :patch) do |f| %>
+      <div class="mb-3">
+        <%= f.label :field_text, "Question" %>
+        <%= f.text_field :field_text, class: "form-control", required: true %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :field_type, "Response Type" %>
+        <%= f.select :field_type, options_for_select([["Text", "text"], ["Radio Buttons", "radio"], ["Checkboxes", "checkbox"], ["Dropdown", "select"]], field.field_type), class: "form-control" %>
+      </div>
+
+      <div class="mb-3 options-container" style="<%= field.field_type == 'text' ? 'display: none;' : '' %>">
+        <%= f.label :options, "Options (comma-separated)" %>
+        <%= f.text_area :options, value: field.options.present? ? field.options.join(", ") : nil, class: "form-control" %>
+      </div>
+
+      <%= f.submit "Update Field", class: "btn btn-primary" %>
+    <% end %>
+    <%= button_to "Delete Field", form_form_field_path(@form, field), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger mt-2" %>
+  </div>
+<% end %>
+
+<br>
+<%= link_to "Back to Form", edit_form_path(@form), class: "btn btn-secondary" %>

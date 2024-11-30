@@ -1,15 +1,15 @@
-<!-- app/views/forms/show.html.erb -->
-
-<h1><%= @form.name %></h1>
-<p><%= @form.description %></p>
-
-<h2>Form Fields</h2>
+<div class="bg-light p-5 rounded">
+  <h1 class="display-4"><%= @form.name %></h1>
+  <p class="lead"><%= @form.description %></p>
+  <hr class="my-4">
+  
+  <h2>Form Fields</h2>
 <ul>
   <% @form.form_fields.each do |field| %>
     <li>
-      <strong><%= field.field_text %>:</strong> 
+      <strong><%= field.field_text %>:</strong>
       <% if field.options.present? %>
-        <span>Options: <%= field.options.join(', ') %></span>
+        <span>Options: <%= field.options.split(',').join(', ') %></span>
       <% else %>
         <span>No specific options</span>
       <% end %>
@@ -17,22 +17,6 @@
   <% end %>
 </ul>
 
-<%= link_to 'Respond to this Form', new_response_form_path(@form), class: "btn btn-primary" %>
-
-<h2>Responses</h2>
-<% if @form.responses.any? %>
-  <ul>
-    <% @form.responses.each do |response| %>
-      <li>
-        <p>Response ID: <%= response.id %></p>
-        <ul>
-          <% response.answers.each do |answer| %>
-            <li><strong><%= answer.form_field.field_text %>:</strong> <%= answer.response_text %></li>
-          <% end %>
-        </ul>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>No responses yet for this form.</p>
-<% end %>
+  <%= link_to 'Respond to this Form', new_form_response_path(@form), class: "btn btn-secondary" %> |
+  <%= link_to 'View All Responses', form_responses_path(@form), class: "btn btn-primary" %>
+</div>

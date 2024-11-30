@@ -1,0 +1,41 @@
+<h1>Respond to: <%= @form.name %></h1>
+
+<%= form_with(model: @response, url: form_responses_path(@form), method: :post, local: true) do |f| %>
+  <% @response.answers.each do |answer| %>
+    <% next unless answer.form_field.present? %>
+    <div class="mb-3">
+      <strong><%= answer.form_field.field_text %></strong>
+      <% if answer.form_field.options.present? %>
+        <% options = answer.form_field.options.split(',') %>
+        <% if answer.form_field.field_type == 'radio' %>
+          <% options.each do |option| %>
+            <%= f.fields_for :answers, answer do |af| %>
+              <%= af.radio_button :response_text, option %>
+              <%= af.label :response_text, option %>
+              <%= af.hidden_field :form_field_id, value: answer.form_field.id %>
+            <% end %>
+          <% end %>
+        <% elsif answer.form_field.field_type == 'checkbox' %>
+          <% options.each do |option| %>
+            <%= f.fields_for :answers, answer do |af| %>
+              <%= af.check_box :response_text, multiple: true, value: option %>
+              <%= af.label :response_text, option %>
+              <%= af.hidden_field :form_field_id, value: answer.form_field.id %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= f.fields_for :answers, answer do |af| %>
+            <%= af.text_field :response_text, class: 'form-control' %>
+            <%= af.hidden_field :form_field_id, value: answer.form_field.id %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= f.fields_for :answers, answer do |af| %>
+          <%= af.text_field :response_text, class: 'form-control' %>
+          <%= af.hidden_field :form_field_id, value: answer.form_field.id %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+  <%= f.submit 'Submit Response', class: 'btn btn-primary' %>
+<% end %>
