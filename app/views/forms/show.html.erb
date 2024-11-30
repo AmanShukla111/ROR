@@ -18,5 +18,63 @@
 </ul>
 
   <%= link_to 'Respond to this Form', new_form_response_path(@form), class: "btn btn-secondary" %> |
-  <%= link_to 'View All Responses', form_responses_path(@form), class: "btn btn-primary" %>
+  <%= link_to 'View All Responses', form_responses_path(@form), class: "btn btn-primary" %> |
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal">
+    Invite Users
+  </button>
 </div>
+
+<br>
+
+<div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inviteModalLabel">Invite Users</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with url: form_form_invites_path(@form), method: :post, local: true do |f| %>
+          <div class="mb-3">
+            <%= f.label :email, "User Email", class: "form-label" %>
+            <%= f.email_field :email, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :role, "Role", class: "form-label" %>
+            <%= f.select :role, FormInvite.roles.keys, class: "form-select" %>
+          </div>
+          <%= f.submit "Send Invitation", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>Invited Users</h3>
+
+<% if @form.form_invites.any? %>
+  <table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @form.form_invites.each do |invite| %>
+        <tr>
+          <td><%= invite.user.email %></td>
+          <td><%= invite.role %></td>
+          <td><%= invite.accepted ? "Accepted" : "Pending" %></td>
+          <td>
+           <%= button_to "Revoke", revoke_form_form_invite_path(@form, invite), method: :delete, data: { confirm: "Are you sure you want to revoke this invite?" } if can?(:manage, invite) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No users invited.</p>
+<% end %>

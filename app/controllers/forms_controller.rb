@@ -1,68 +1,105 @@
 class FormsController < ApplicationController
-    before_action :set_form, only: [ :new_response, :show, :edit, :update, :destroy, :responses ]
+  before_action :authenticate_user!
+  load_and_authorize_resource
 
-    # Display all forms
-    def index
-      @forms = Form.all
+
+  # Display all forms
+  def index
+    @forms = Form.all
+  end
+
+
+  def show
+    # If the user is not authorized, set the flash notice and redirect
+    if cannot?(:read, @form)
+      flash[:notice] = "You are not authorized to access this form."
+      redirect_to forms_path and return
     end
+  end
 
-    # Show a single form
-    def show
+
+  # Initialize a new form
+  def new
+    @form = Form.new
+  end
+
+  def create
+    @form = Form.new(form_params)
+    @form.owner_id = current_user.id 
+
+    if @form.save
+      redirect_to @form, notice: "Form was successfully created."
+    else
+      render :new, status: :unprocessable_entity
     end
+  end
 
-    # Initialize a new form
-    def new
-      @form = Form.new
+  # Edit a form
+  def edit
+    @form_fields = @form.form_fields
+  end
+
+  # Update a form in the database
+  def update
+    if @form.update(form_params)
+      redirect_to @form, notice: "Form was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
+  end
 
-    # Create a form in the database
-    def create
-      @form = Form.new(form_params)
-      if @form.save
-        redirect_to @form, notice: "Form was successfully created."
-      else
-        render :new, status: :unprocessable_entity
-      end
-    end
+  # List all responses for this form
+  def responses
+    @responses = @form.responses
+  end
 
-    def edit
-      @form = Form.find(params[:id])
-      @form_fields = @form.form_fields
-    end
-    
-    # Update a form in the database
-    def update
-      if @form.update(form_params)
-        redirect_to @form, notice: "Form was successfully updated."
-      else
-        render :edit, status: :unprocessable_entity
-      end
-    end
-
-    def responses
-        # List all responses for this form
-        @responses = @form.responses
-    end
-
-
-
-
-
-    def destroy
-      @form.destroy
+  # Delete a form
+  def destroy
+    if @form.destroy
       redirect_to forms_path, notice: "Form was successfully deleted."
+    else
+      redirect_to @form, alert: "Unable to delete the form."
     end
+  end
 
+  def invite_user
+    form = Form.find(params[:id])
+    authorize! :invite, form
+  
+    email = params[:email]
+    role = params[:role]
+    user = User.find_or_create_by(email: email)
     
-    private
+    invite = form.form_invites.find_or_initialize_by(user: user)
+    invite.role = role
+    invite.accepted = false
+    if invite.save
+      # (Optional) Send an email with the invitation link.
+      redirect_to form_path(form), notice: "Invitation sent to #{email}."
+    else
+      redirect_to form_path(form), alert: "Unable to send invitation."
+    end
+  end
 
-    # Set form for actions that need it
-    def set_form
-      @form = Form.find(params[:id])
+
+  def revoke_invite
+    @form = Form.find(params[:id])
+    @form_invite = @form.form_invites.find(params[:invite_id])
+    
+    if @form_invite.destroy
+      flash[:notice] = "Invitation revoked successfully."
+    else
+      flash[:alert] = "There was an issue revoking the invitation."
     end
 
-    # Strong parameters to allow specific form fields only
-    def form_params
-      params.require(:form).permit(:name, :description)
-    end
+    redirect_to @form
+  end
+  
+
+  private
+
+  # Strong parameters to allow specific form fields only
+  def form_params
+    params.require(:form).permit(:name, :description)
+  end
 end

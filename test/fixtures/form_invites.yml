@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  form: one
+  user: one
+  role: 1
+  accepted: false
+
+two:
+  form: two
+  user: two
+  role: 1
+  accepted: false

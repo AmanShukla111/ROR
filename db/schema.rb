@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_30_135804) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_30_162012) do
   create_table "answers", force: :cascade do |t|
     t.integer "response_id", null: false
     t.integer "form_field_id", null: false
@@ -31,11 +31,23 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_30_135804) do
     t.index ["form_id"], name: "index_form_fields_on_form_id"
   end
 
+  create_table "form_invites", force: :cascade do |t|
+    t.integer "form_id", null: false
+    t.integer "user_id", null: false
+    t.integer "role", default: 0, null: false
+    t.boolean "accepted", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["form_id"], name: "index_form_invites_on_form_id"
+    t.index ["user_id"], name: "index_form_invites_on_user_id"
+  end
+
   create_table "forms", force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "owner_id"
   end
 
   create_table "responses", force: :cascade do |t|
@@ -60,5 +72,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_30_135804) do
   add_foreign_key "answers", "form_fields"
   add_foreign_key "answers", "responses"
   add_foreign_key "form_fields", "forms"
+  add_foreign_key "form_invites", "forms"
+  add_foreign_key "form_invites", "users"
   add_foreign_key "responses", "forms"
 end
